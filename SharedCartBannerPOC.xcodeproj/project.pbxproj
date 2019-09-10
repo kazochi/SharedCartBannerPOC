@@ -12,6 +12,8 @@
 		C28A1F7A23282DE3005152DA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C28A1F7823282DE3005152DA /* Main.storyboard */; };
 		C28A1F7C23282DE6005152DA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C28A1F7B23282DE6005152DA /* Assets.xcassets */; };
 		C28A1F7F23282DE6005152DA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C28A1F7D23282DE6005152DA /* LaunchScreen.storyboard */; };
+		C28A1F8723282DF3005152DA /* SharedCartBannerHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = C28A1F8623282DF3005152DA /* SharedCartBannerHandler.swift */; };
+		C28A1F8923283BB0005152DA /* BannerContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C28A1F8823283BB0005152DA /* BannerContainerViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +24,8 @@
 		C28A1F7B23282DE6005152DA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C28A1F7E23282DE6005152DA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		C28A1F8023282DE6005152DA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C28A1F8623282DF3005152DA /* SharedCartBannerHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedCartBannerHandler.swift; sourceTree = "<group>"; };
+		C28A1F8823283BB0005152DA /* BannerContainerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerContainerViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,7 +59,9 @@
 			isa = PBXGroup;
 			children = (
 				C28A1F7423282DE3005152DA /* AppDelegate.swift */,
+				C28A1F8623282DF3005152DA /* SharedCartBannerHandler.swift */,
 				C28A1F7623282DE3005152DA /* ViewController.swift */,
+				C28A1F8823283BB0005152DA /* BannerContainerViewController.swift */,
 				C28A1F7823282DE3005152DA /* Main.storyboard */,
 				C28A1F7B23282DE6005152DA /* Assets.xcassets */,
 				C28A1F7D23282DE6005152DA /* LaunchScreen.storyboard */,
@@ -136,6 +142,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				C28A1F7723282DE3005152DA /* ViewController.swift in Sources */,
+				C28A1F8723282DF3005152DA /* SharedCartBannerHandler.swift in Sources */,
+				C28A1F8923283BB0005152DA /* BannerContainerViewController.swift in Sources */,
 				C28A1F7523282DE3005152DA /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
