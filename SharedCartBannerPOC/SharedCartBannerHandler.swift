@@ -9,17 +9,26 @@
 import UIKit
 
 @objc class SharedCartBannerHandler: NSObject {
+    static let shared = SharedCartBannerHandler()
+    
     static let sharedCartDidBecomeActiveNotification = Notification.Name("SharedCartDidBecomeActiveNotification")
     static let sharedCartDidBecomeInactiveNotification = Notification.Name("SharedCartDidBecomeInactiveNotification")
 
-    private let bannerParentView: UIView
+    var bannerContainerView: UIView? {
+        willSet {
+            hideBannerView()
+        }
+    }
+    
     private let bannerView: UIView
     private var contentInsentAdjustedScrollViews: [UIScrollView] = []
     private var bannerBottomConstraint: NSLayoutConstraint!
 
-    init(bannerParentView: UIView, bannerView: UIView) {
-        self.bannerParentView = bannerParentView
-        self.bannerView = bannerView
+    override init() {
+        bannerView = UIView(frame: .zero)
+        bannerView.backgroundColor = .red
+        bannerView.translatesAutoresizingMaskIntoConstraints = false
+        bannerView.heightAnchor.constraint(equalToConstant: 45).isActive = true
     }
     
     var isActivated: Bool = false {
@@ -56,32 +65,39 @@ import UIKit
     
     
     @objc func showBannerView() {
+        guard let bannerContainerView = bannerContainerView else {
+            return
+        }
         guard bannerView.superview == nil else {
             return
         }
         
-        self.bannerParentView.addSubview(bannerView)
+        bannerContainerView.addSubview(bannerView)
         
-        bannerBottomConstraint = bannerView.topAnchor.constraint(equalTo: bannerParentView.bottomAnchor)
+        bannerBottomConstraint = bannerView.topAnchor.constraint(equalTo: bannerContainerView.bottomAnchor)
         NSLayoutConstraint.activate([bannerBottomConstraint,
-                                     bannerView.leadingAnchor.constraint(equalTo: bannerParentView.leadingAnchor),
-                                     bannerView.trailingAnchor.constraint(equalTo: bannerParentView.trailingAnchor)])
-        bannerParentView.setNeedsLayout()
-        bannerParentView.layoutIfNeeded()
+                                     bannerView.leadingAnchor.constraint(equalTo: bannerContainerView.leadingAnchor),
+                                     bannerView.trailingAnchor.constraint(equalTo: bannerContainerView.trailingAnchor)])
+        bannerContainerView.setNeedsLayout()
+        bannerContainerView.layoutIfNeeded()
         UIView.animate(withDuration: 0.2) {
-            self.bannerBottomConstraint.constant = -(self.bannerView.bounds.size.height + self.bannerParentView.layoutMargins.bottom)
-            self.bannerParentView.setNeedsLayout()
-            self.bannerParentView.layoutIfNeeded()
+            self.bannerBottomConstraint.constant = -(self.bannerView.bounds.size.height + bannerContainerView.layoutMargins.bottom)
+            bannerContainerView.setNeedsLayout()
+            bannerContainerView.layoutIfNeeded()
         }
-        adjustContentInset(view: bannerParentView)
+        adjustContentInset(view: bannerContainerView)
     }
     
     
     @objc func hideBannerView() {
+        guard let bannerContainerView = bannerContainerView else {
+            return
+        }
+        
         UIView.animate(withDuration: 0.2, animations: {
             self.bannerBottomConstraint.constant = 0
-            self.bannerParentView.setNeedsLayout()
-            self.bannerParentView.layoutIfNeeded()
+            bannerContainerView.setNeedsLayout()
+            bannerContainerView.layoutIfNeeded()
         }, completion: { _ in
             self.bannerView.removeFromSuperview()
             
@@ -95,8 +111,8 @@ import UIKit
     
     private func adjustContentInset(view: UIView) {
         if let scrollView = view as? UIScrollView {
-            let scrollViewRectInParentView = scrollView.convert(scrollView.frame, to: self.bannerParentView)
-            let bannerViewRectInParentView = self.bannerView.convert(self.bannerView.bounds, to: self.bannerParentView)
+            let scrollViewRectInParentView = scrollView.convert(scrollView.frame, to: self.bannerContainerView)
+            let bannerViewRectInParentView = self.bannerView.convert(self.bannerView.bounds, to: self.bannerContainerView)
             let overwrappedRect = bannerViewRectInParentView.intersection(scrollViewRectInParentView)
             scrollView.contentInset.bottom = overwrappedRect.size.height
             contentInsentAdjustedScrollViews.append(scrollView)

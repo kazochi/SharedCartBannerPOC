@@ -20,18 +20,10 @@ class BannerContainerViewController : UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // We most likely have a view controller that manages the content of the banner.
-        bannerView = UIView(frame: .zero)
-        bannerView.backgroundColor = .red
-        bannerView.translatesAutoresizingMaskIntoConstraints = false
-        bannerView.heightAnchor.constraint(equalToConstant: 45).isActive = true
-        
-        bannerHandler = SharedCartBannerHandler(bannerParentView: view, bannerView: bannerView)
-        
+        bannerHandler = SharedCartBannerHandler.shared
+        bannerHandler?.bannerContainerView = view
         contentViewController = ViewController()
         bannerHandler?.isActivated = contentViewController!.shouldShowSharedCartBanner
-        
         setUpContentView()
     }
     
