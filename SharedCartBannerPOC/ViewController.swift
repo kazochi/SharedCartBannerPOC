@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ViewController : UIViewController, UITableViewDelegate, UITableViewDataSource, SharedCartBannerPresentable {
+class ViewController : UIViewController, UITableViewDelegate, UITableViewDataSource {
     var tableView: UITableView!
     override func loadView() {
         tableView = UITableView(frame: .zero)
@@ -53,9 +53,9 @@ class ViewController : UIViewController, UITableViewDelegate, UITableViewDataSou
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.row == 0 {
-            NotificationCenter.default.post(name: SharedCartBannerHandler.sharedCartDidBecomeActiveNotification, object: nil)
+            NotificationCenter.default.post(name: SharedCartBannerContainerViewController.sharedCartDidBecomeActiveNotification, object: nil)
         } else if indexPath.row == 1 {
-            NotificationCenter.default.post(name: SharedCartBannerHandler.sharedCartDidBecomeInactiveNotification, object: nil)
+            NotificationCenter.default.post(name: SharedCartBannerContainerViewController.sharedCartDidBecomeInactiveNotification, object: nil)
         } else if indexPath.row == 2 {
             
         }

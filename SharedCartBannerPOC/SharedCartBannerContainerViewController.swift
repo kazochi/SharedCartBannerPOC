@@ -8,27 +8,38 @@
 
 import UIKit
 
-@objc class SharedCartBannerHandler: NSObject {
-    static let shared = SharedCartBannerHandler()
-    
+@objc class SharedCartBannerContainerViewController: UIViewController {
     static let sharedCartDidBecomeActiveNotification = Notification.Name("SharedCartDidBecomeActiveNotification")
     static let sharedCartDidBecomeInactiveNotification = Notification.Name("SharedCartDidBecomeInactiveNotification")
-
-    var bannerContainerView: UIView? {
-        willSet {
-            hideBannerView()
-        }
-    }
     
+    private let viewController: UIViewController
     private let bannerView: UIView
-    private var contentInsentAdjustedScrollViews: [UIScrollView] = []
     private var bannerBottomConstraint: NSLayoutConstraint!
 
-    override init() {
+    init(viewController: UIViewController) {
+        self.viewController = viewController
         bannerView = UIView(frame: .zero)
         bannerView.backgroundColor = .red
         bannerView.translatesAutoresizingMaskIntoConstraints = false
         bannerView.heightAnchor.constraint(equalToConstant: 45).isActive = true
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        addChild(viewController)
+        view.addSubview(viewController.view)
+        viewController.view.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([viewController.view.topAnchor.constraint(equalTo: view.topAnchor),
+                                     viewController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                                     viewController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                                     viewController.view.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor)])
+        
+        isActivated = true
     }
     
     var isActivated: Bool = false {
@@ -48,24 +59,24 @@ import UIKit
     private func registerNotifications() {
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(showBannerView),
-                                               name: SharedCartBannerHandler.sharedCartDidBecomeActiveNotification,
+                                               name: SharedCartBannerContainerViewController.sharedCartDidBecomeActiveNotification,
                                                object: nil)
         
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(hideBannerView),
-                                               name: SharedCartBannerHandler.sharedCartDidBecomeInactiveNotification,
+                                               name: SharedCartBannerContainerViewController.sharedCartDidBecomeInactiveNotification,
                                                object: nil)
     }
     
     
     private func deRegisterNotification() {
-        NotificationCenter.default.removeObserver(self, name: SharedCartBannerHandler.sharedCartDidBecomeActiveNotification, object: nil)
-        NotificationCenter.default.removeObserver(self, name: SharedCartBannerHandler.sharedCartDidBecomeInactiveNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: SharedCartBannerContainerViewController.sharedCartDidBecomeActiveNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: SharedCartBannerContainerViewController.sharedCartDidBecomeInactiveNotification, object: nil)
     }
     
     
     @objc func showBannerView() {
-        guard let bannerContainerView = bannerContainerView else {
+        guard let bannerContainerView = view else {
             return
         }
         guard bannerView.superview == nil else {
@@ -85,12 +96,15 @@ import UIKit
             bannerContainerView.setNeedsLayout()
             bannerContainerView.layoutIfNeeded()
         }
-        adjustContentInset(view: bannerContainerView)
+        
+        var additionalSafeArea = UIEdgeInsets()
+        additionalSafeArea.bottom = bannerView.bounds.size.height
+        viewController.additionalSafeAreaInsets = additionalSafeArea
     }
     
     
     @objc func hideBannerView() {
-        guard let bannerContainerView = bannerContainerView else {
+        guard let bannerContainerView = view else {
             return
         }
         
@@ -100,27 +114,9 @@ import UIKit
             bannerContainerView.layoutIfNeeded()
         }, completion: { _ in
             self.bannerView.removeFromSuperview()
-            
-            for scrollView in self.contentInsentAdjustedScrollViews {
-                // What if scrollView has non-zero content inset?
-                scrollView.contentInset.bottom = 0
-            }
         })
-    }
-    
-    
-    private func adjustContentInset(view: UIView) {
-        if let scrollView = view as? UIScrollView {
-            let scrollViewRectInParentView = scrollView.convert(scrollView.frame, to: self.bannerContainerView)
-            let bannerViewRectInParentView = self.bannerView.convert(self.bannerView.bounds, to: self.bannerContainerView)
-            let overwrappedRect = bannerViewRectInParentView.intersection(scrollViewRectInParentView)
-            scrollView.contentInset.bottom = overwrappedRect.size.height
-            contentInsentAdjustedScrollViews.append(scrollView)
-        }
-        // Maybe overkill to go recursive entire view hierarchy
-        for subView in view.subviews {
-            adjustContentInset(view: subView)
-        }
+        
+        viewController.additionalSafeAreaInsets = .zero
     }
 }
 
